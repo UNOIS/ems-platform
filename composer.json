@@ -1,0 +1,22 @@
+{
+    "name" : "elwingert/ems-platform",
+    "description": "EMS Platform API client for PHP Users.",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "EmsPlatform\\": "src/EmsPlatform"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "EmsPlatform\\Tests\\": ["tests/EmsPlatform/Tests"]
+        }
+    },
+    "require": {
+        "php": "^7.0",
+        "guzzlehttp/guzzle": "^6.0"
+  	},
+    "require-dev": {
+        "phpunit/phpunit": "^5"
+	}
+}
