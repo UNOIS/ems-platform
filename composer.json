@@ -1,5 +1,5 @@
 {
-    "name" : "elwingert/ems-platform",
+    "name" : "unoadis/ems-platform",
     "description": "EMS Platform API client for PHP Users.",
     "type": "library",
     "autoload": {
