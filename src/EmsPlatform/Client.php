@@ -182,6 +182,18 @@ class Client
     }
 
     /**
+     * Return a Reservation, given its id.
+     *
+     * @param int $id
+     *
+     * @return mixed
+     */
+    public function getReservation(int $id)
+    {
+        return $this->request('GET', 'reservations/'.$id);
+    }
+
+    /**
      * Return a list of all configured statuses.
      *
      * @param int $page
