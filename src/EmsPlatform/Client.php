@@ -262,6 +262,15 @@ class Client
     {
         $parameters = $this->processParameters(__FUNCTION__, func_get_args());
 
+        //Make sure all array elements are integers
+        foreach ($parameters as $key => $val) {
+            if (is_array($val)) {
+                foreach ($val as $key2 => $val2) {
+                    $parameters[ $key ][ $key2 ] = intval($val2);
+                }
+            }
+        }
+
         return $this->request('POST', 'bookings/actions/search', $parameters);
     }
 
