@@ -3,6 +3,7 @@
 namespace EmsPlatform;
 
 use GuzzleHttp\Client as GuzzleHttpClient;
+use GuzzleHttp\Psr7;
 
 /**
  * @author elwingert
@@ -33,6 +34,55 @@ class Client
     public function clientAuthentication(string $clientId, string $secret)
     {
         $this->clientToken = $this->request('POST', 'clientauthentication', ['clientId' => $clientId, 'secret' => $secret])->clientToken;
+    }
+
+    /**
+     * Creates a reservation with bookings.
+     *
+     * https://scheduling.nebraska.edu/EmsPlatform/api/v1/static/swagger-ui/#tag/Reservations%2Fpaths%2F~1reservations~1actions~1create%2Fpost
+     *
+     * @param  bool   $sendConfirmation
+     * @param  int    $actualAttendance
+     * @param  int    $altContactId
+     * @param  string $altEmailAddress
+     * @param  string $altFax
+     * @param  string $altPhone
+     * @param  string $altTempContact
+     * @param  string $billingReference
+     * @param  array  $bookings
+     * @param  array  $calendaringData
+     * @param  string $comment
+     * @param  int    $commentId
+     * @param  string $emailAddress
+     * @param  int    $estimatedAttendance
+     * @param  int    $eventTypeId
+     * @param  string $eventname
+     * @param  string $fax
+     * @param  int    $groupId
+     * @param  string $phone
+     * @param  string $poNumber
+     * @param  int    $processTemplateId
+     * @param  array  $serviceOrders
+     * @param  int    $statusId
+     * @param  string $tempContact
+     * @param  string $tempRoomDescription
+     * @param  array  $userDefinedFields
+     * @param  bool   $vip
+     *
+     * @return mixed
+     */
+    public function createReservation(bool $sendConfirmation = false, int $actualAttendance = null, int $altContactId = null, string $altEmailAddress = '', string $altFax = '', string $altPhone = '', string $altTempContact = '', string $billingReference = '', array $bookings = [], array $calendaringData = [], string $comment = '', int $commentId = null, string $emailAddress = '', int $estimatedAttendance = null, int $eventTypeId = null, string $eventname = '', string $fax = '', int $groupId = null, string $phone = '', string $poNumber = '', int $processTemplateId = null, array $serviceOrders = [], int $statusId = null, string $tempContact = '', string $tempRoomDescription = '', array $userDefinedFields = [], bool $vip = null)
+    {
+        if (count($calendaringData) == 0) {
+            unset($calendaringData);
+        }
+        if (count($serviceOrders) == 0) {
+            unset($serviceOrders);
+        }
+
+        $parameters = $this->processParameters(__FUNCTION__, func_get_args());
+
+        return $this->request('POST', 'reservations/actions/create', $parameters);
     }
 
     /**
@@ -182,6 +232,32 @@ class Client
     }
 
     /**
+     * Returns a list of groups.
+     *
+     * @param  int    $page
+     * @param  int    $pageSize
+     * @param  bool   $active
+     * @param  bool   $displayOnWeb
+     * @param  int    $webUserId
+     * @param  string $searchText
+     * @param  string $groupName
+     * @param  string $emailAddress
+     * @param  string $badgeNumber
+     * @param  string $externalReference
+     * @param  int    $networkId
+     * @param  string $personnelNumber
+     * @param  string $city
+     *
+     * @return mixed
+     */
+    public function getGroups(int $page = null, int $pageSize = null, bool $active = null, bool $displayOnWeb = null, int $webUserId = null, string $searchText = '', string $groupName = '', string $emailAddress = '', string $badgeNumber = '', string $externalReference = '', string $networkId = '', string $personnelNumber = '', string $city = '')
+    {
+        $parameters = $this->processParameters(__FUNCTION__, func_get_args());
+
+        return $this->request('GET', 'groups', $parameters);
+    }
+
+    /**
      * Return a Reservation, given its id.
      *
      * @param int $id
@@ -191,6 +267,54 @@ class Client
     public function getReservation(int $id)
     {
         return $this->request('GET', 'reservations/'.$id);
+    }
+
+    /**
+     * Return a list of rooms, filtered by optional query string parameters.
+     *
+     * @param  int    $page
+     * @param  int    $pageSize
+     * @param  string $searchText
+     * @param  bool   $favorite
+     * @param  bool   $bookable
+     * @param  int    $webUserId
+     * @param  int    $webTemplateId
+     * @param  int    $buildingId
+     * @param  int    $bookViewId
+     * @param  int    $roomTypeId
+     * @param  int    $floorId
+     * @param  string $code
+     * @param  string $externalReference
+     * @param  int    $capacity
+     * @param  bool   $includeSyncMailboxes
+     * @param  string $udf
+     *
+     * @return mixed
+     */
+    public function getRooms(int $page = null, int $pageSize = null, string $searchText = '', bool $favorite = null, bool $bookable = null, int $webUserId = null, int $webTemplateId = null, int $buildingId = null, int $bookViewId = null, int $roomTypeId = null, int $floorId = null, string $code = '', string $externalReference = '', int $capacity = null, bool $includeSyncMailboxes = null, string $udf = '')
+    {
+        $parameters = $this->processParameters(__FUNCTION__, func_get_args());
+
+        return $this->request('GET', 'rooms', $parameters);
+    }
+
+    /**
+     * Return a list of all setup types.
+     *
+     * @param int    $page
+     * @param int    $pageSize
+     * @param bool   $active
+     * @param string $searchText
+     * @param int    $webTemplateId
+     * @param int    $facilityId
+     *
+     * @return mixed
+     */
+    public function getSetupTypes(int $page = null, int $pageSize = null, bool $active = true, string $searchText = '', int $webTemplateId = null, int $facilityId = null)
+    {
+        $parameters = $this->processParameters(__FUNCTION__, func_get_args());
+
+        return $this->request('GET', 'setuptypes', $parameters);
     }
 
     /**
@@ -309,6 +433,10 @@ class Client
                         $parms['query']['pageSize'] = $parameters['pageSize'];
                         unset($parms['json']['pageSize']);
                     }
+                    if (isset($parameters['sendConfirmation'])) {
+                        $parms['query']['sendConfirmation'] = $parameters['sendConfirmation'];
+                        unset($parms['json']['sendConfirmation']);
+                    }
                     break;
                 case 'GET':
                     $parms['query'] = $parameters;
@@ -324,17 +452,17 @@ class Client
             }
 
             $res = $this->guzzleClient->request(
-                    $method,
-                    $request,
-                    [
-                                    'json'    => $parms['json'],
-                                    'query'   => $parms['query'],
-                                    'headers' => [
-                                                    'x-ems-api-token' => $this->clientToken,
-                                    ],
-                                    'debug' => $this->debugMode,
-                    ]
-                    );
+                $method,
+                $request,
+                [
+                    'json'    => $parms['json'],
+                    'query'   => $parms['query'],
+                    'headers' => [
+                        'x-ems-api-token' => $this->clientToken,
+                    ],
+                    'debug' => $this->debugMode,
+                ]
+            );
 
             if (is_object($res->getBody())) {
                 $json = $res->getBody()->getContents();
@@ -345,13 +473,20 @@ class Client
             return json_decode($json);
         } catch (\GuzzleHttp\Exception\TransferException $e) {
             $msg = $e->getResponse()->getBody()->getContents();
-            $json = json_decode($msg);
             if ($this->debugMode) {
-                $msg = '<pre>'.htmlentities(print_r($parms, true)).print_r($json, true).'</pre>';
+                $msg = '<pre>'.htmlentities(print_r($parms, true))."\n". Psr7\str($e->getRequest())."\n".Psr7\str($e->getResponse()).'</pre>';
             } else {
-                $msg = $json->message;
+                $json = json_decode($msg);
+                if ( json_last_error() === JSON_ERROR_NONE ) {
+                    $msg = $json->message;
+                } else {
+                    $o = $this->jsonSplitObjects($msg);
+                    $json = json_decode($o[0]);
+                    if (json_last_error() === JSON_ERROR_NONE) {
+                        $msg = $json->appMessage;
+                    }
+                }
             }
-
             throw new EmsException($msg);
         }
     }
@@ -380,6 +515,22 @@ class Client
         return $this->defaultPageSize;
     }
 
+    function jsonSplitObjects($json)
+    {
+        $q = FALSE;
+        $len = strlen($json);
+        for($l=$c=$i=0;$i<$len;$i++)
+        {   
+            $json[$i] == '"' && ($i>0?$json[$i-1]:'') != '\\' && $q = !$q;
+            if(!$q && in_array($json[$i], array(" ", "\r", "\n", "\t"))){continue;}
+            in_array($json[$i], array('{', '[')) && !$q && $l++;
+            in_array($json[$i], array('}', ']')) && !$q && $l--;
+            (isset($objects[$c]) && $objects[$c] .= $json[$i]) || $objects[$c] = $json[$i];
+            $c += ($l == 0);
+        }   
+        return $objects;
+    }
+
     /**
      * @param bool $debugMode
      */
@@ -404,7 +555,7 @@ class Client
     {
         $reflection = new \ReflectionClass($this);
         $methods = $reflection->getMethods();
-        $parameters = $reflection->getMethod('searchBookings')->getParameters();
+        $parameters = $reflection->getMethod($method)->getParameters();
 
         $returns = [];
         foreach ($args as $key => $val) {
