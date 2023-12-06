@@ -1,10 +1,10 @@
 # EMS Platform Rest Client
 
-A rest client to the EMS Platform
+A fork of the unois rest client to the EMS Platform
 
 # Requirements
 
-- PHP >= 7.0
+- PHP >= 8.0
 - [php guzzle/guzzle/](https://github.com/guzzle/guzzle/)
 
 # Installation
@@ -20,7 +20,7 @@ A rest client to the EMS Platform
 	"repositories": [
         {
         	"type" : "vcs",
-        	"url": "https://github.com/unoadis/ems-platform"
+        	"url": "https://github.com/generalludd/ems-platform"
         }
    ```
    ```json
